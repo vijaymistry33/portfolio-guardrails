@@ -1,0 +1,71 @@
+# Event calendar for the synthetic demo.
+# The kinds of release are realistic; the dates and times are invented for the
+# demo and are NOT real schedules. A live calendar must be curated and reviewed.
+
+covers = ["2026-07-01", "2026-12-31"]   # a trade date outside this range holds every order
+
+[[events]]
+id = "us-fed-testimony"
+title = "US Fed Chair testimony"
+impact = "HIGH"
+markets = ["US"]
+date = "2026-09-30"
+time = "10:00"
+timezone = "America/New_York"
+
+[[events]]
+id = "cn-pmi"
+title = "China official PMI"
+impact = "HIGH"
+markets = ["HK"]
+date = "2026-09-30"
+time = "09:30"
+timezone = "Asia/Shanghai"
+
+[[events]]
+id = "au-fiscal"
+title = "Australian fiscal statement"
+impact = "HIGH"
+markets = ["AU"]
+date = "2026-09-30"
+timezone = "Australia/Sydney"           # no time: release time not announced
+
+[[events]]
+id = "us-consumer-confidence"
+title = "US consumer confidence"
+impact = "MEDIUM"                       # only HIGH-impact events hold orders
+markets = ["US"]
+date = "2026-09-30"
+time = "10:00"
+timezone = "America/New_York"
+
+[[events]]
+id = "feed-us-crude"
+title = "US crude inventories"
+impact = "HIGH"
+markets = ["US"]
+date = "2026-09-30"
+time = "10:30"
+timezone = "America/New_York"
+source = "feed"                         # unreviewed automated row: shown, never obeyed
+
+# Index-provider rebalance rules. These annotate orders; they never hold them.
+[[index_rebalances]]
+provider = "FTSE"
+rule = "THIRD_FRIDAY"
+months = [3, 6, 9, 12]
+
+[[index_rebalances]]
+provider = "S&P"
+rule = "THIRD_FRIDAY"
+months = [3, 6, 9, 12]
+
+[[index_rebalances]]
+provider = "MSCI"
+rule = "LAST_WEEKDAY_OF_MONTH"
+months = [2, 5, 8, 11]
+
+[[index_rebalances]]
+provider = "Bloomberg"                  # bond indices rebalance at each month end
+rule = "LAST_WEEKDAY_OF_MONTH"
+months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]

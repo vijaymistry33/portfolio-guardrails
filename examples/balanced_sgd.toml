@@ -1,0 +1,191 @@
+# Illustrative "Balanced" model portfolio for an SGD investor.
+# Tickers are made up. Fees, lot sizes, AUM, liquidity and spreads are
+# plausible placeholders chosen to exercise the checks; they describe no real fund.
+
+name = "Balanced (illustrative)"
+base_currency = "SGD"
+base_timezone = "Asia/Singapore"  # times in the report are shown here
+stale_after_days = 3            # weekdays since the last good price
+
+# When each market's orders are sent, in that market's own local time.
+# Exchange hours are not modelled beyond this; verify against each exchange.
+[markets.US]
+timezone = "America/New_York"
+execution_time = "10:00"
+
+[markets.HK]
+timezone = "Asia/Hong_Kong"
+execution_time = "10:00"
+
+[markets.AU]
+timezone = "Australia/Sydney"
+execution_time = "10:30"
+
+[markets.SG]
+timezone = "Asia/Singapore"
+execution_time = "09:30"
+
+[timing]
+lockout_before_minutes = 30     # hold orders from 30 minutes before a HIGH-impact release...
+lockout_after_minutes = 15      # ...until 15 minutes after it
+urgent_breach_multiple = 2.0    # drift of 2x the band or more trades through a hold
+
+[policy]
+min_trade_base = 200.0          # SGD; smaller orders cost more than the drift they fix
+prefer_cashflows = true         # use deposits/withdrawals before selling
+vol_range = [0.07, 0.12]        # ex-ante annualised volatility for this risk level
+max_drift_te = 0.010            # ex-ante tracking error of current vs model weights
+max_single_weight = 0.40
+max_foreign_currency = 0.60     # unhedged non-SGD exposure
+
+[policy.targets]
+GEQ  = { weight = 0.30, band = 0.03 }
+EMQ  = { weight = 0.08, band = 0.02 }
+HKQ  = { weight = 0.07, band = 0.02 }
+AUQ  = { weight = 0.05, band = 0.015 }
+IGB  = { weight = 0.30, band = 0.03 }
+SGB  = { weight = 0.10, band = 0.02 }
+GLD  = { weight = 0.05, band = 0.015 }
+CASH = { weight = 0.05, band = 0.03 }
+
+[diligence]
+window_days = 756               # three years
+max_tracking_error = 0.010
+min_aum_usd_m = 100.0
+min_adv_usd_m = 1.0
+max_spread_bps = 15.0
+expected_turnover = 0.30        # traded value per year / position value
+max_breakeven_months = 12.0
+
+[alternatives]
+EMQ = ["EMQ_ALT"]               # same benchmark, considered as a replacement
+
+[scenario]                      # demo only
+start_nav = 250000.0            # SGD, invested at target weights one year ago
+deposit = 30000.0               # SGD, arriving today
+
+[instruments.GEQ]
+name = "Global developed-market equity"
+asset_class = "Equity"
+market = "US"
+currency = "USD"
+lot_size = 1
+min_trade_local = 0.0
+commission_bps = 3.0
+hedged = false
+benchmark = "IDX_DM"
+index_family = "FTSE"
+ter = 0.0020
+aum_usd_m = 25000.0
+adv_usd_m = 300.0
+spread_bps = 2.0
+
+[instruments.EMQ]
+name = "Emerging-market equity"
+asset_class = "Equity"
+market = "US"
+currency = "USD"
+lot_size = 1
+min_trade_local = 0.0
+commission_bps = 3.0
+hedged = false
+benchmark = "IDX_EM"
+index_family = "MSCI"
+ter = 0.0068
+aum_usd_m = 3000.0
+adv_usd_m = 60.0
+spread_bps = 5.0
+
+[instruments.EMQ_ALT]
+name = "Emerging-market equity (lower-cost alternative)"
+asset_class = "Equity"
+market = "US"
+currency = "USD"
+lot_size = 1
+min_trade_local = 0.0
+commission_bps = 3.0
+hedged = false
+benchmark = "IDX_EM"
+index_family = "FTSE"
+ter = 0.0015
+aum_usd_m = 9000.0
+adv_usd_m = 120.0
+spread_bps = 3.0
+
+[instruments.HKQ]
+name = "Hong Kong equity"
+asset_class = "Equity"
+market = "HK"
+currency = "HKD"
+lot_size = 500                  # board lot: HKEX orders come in whole lots
+min_trade_local = 0.0
+commission_bps = 8.0
+hedged = false
+benchmark = "IDX_HK"
+index_family = "Hang Seng"
+ter = 0.0010
+aum_usd_m = 12000.0
+adv_usd_m = 400.0
+spread_bps = 4.0
+
+[instruments.AUQ]
+name = "Australian equity"
+asset_class = "Equity"
+market = "AU"
+currency = "AUD"
+lot_size = 1
+min_trade_local = 500.0         # minimum first order size, in AUD
+commission_bps = 8.0
+hedged = false
+benchmark = "IDX_AU"
+index_family = "S&P"
+ter = 0.0010
+aum_usd_m = 45.0
+adv_usd_m = 0.8
+spread_bps = 18.0
+
+[instruments.IGB]
+name = "Global aggregate bonds (FX-hedged to SGD)"
+asset_class = "Fixed income"
+market = "US"
+currency = "USD"
+lot_size = 1
+min_trade_local = 0.0
+commission_bps = 3.0
+hedged = true
+benchmark = "IDX_AGG"
+index_family = "Bloomberg"
+ter = 0.0005
+aum_usd_m = 90000.0
+adv_usd_m = 500.0
+spread_bps = 1.0
+
+[instruments.SGB]
+name = "Singapore government bonds"
+asset_class = "Fixed income"
+market = "SG"
+currency = "SGD"
+lot_size = 100
+min_trade_local = 0.0
+commission_bps = 8.0
+hedged = false
+benchmark = "IDX_SG"
+ter = 0.0024
+aum_usd_m = 900.0
+adv_usd_m = 2.0
+spread_bps = 8.0
+
+[instruments.GLD]
+name = "Gold"
+asset_class = "Commodity"
+market = "US"
+currency = "USD"
+lot_size = 1
+min_trade_local = 0.0
+commission_bps = 3.0
+hedged = false
+benchmark = "IDX_GOLD"
+ter = 0.0040
+aum_usd_m = 60000.0
+adv_usd_m = 1500.0
+spread_bps = 1.0
